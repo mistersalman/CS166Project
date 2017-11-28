@@ -23,6 +23,7 @@ import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Scanner;
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -296,9 +297,31 @@ public class AirBooking{
 		}while (true);
 		return input;
 	}//end readChoice
-	
+
 	public static void AddPassenger(AirBooking esql){//1
 		//Add a new passenger to the database
+	    //needs trigger for passenger number, could also find a way to replace missing valuse that exist
+	    Scanner sc = new Scanner(System.in);
+	    System.out.println("Enter Name:");
+	    String name = sc.nextLine();
+	    System.out.println("Enter country:");
+	    String country = sc.nextLine();
+	    System.out.println("Enter Birth Date (YYYY-MM-DD):");
+	    String Date = sc.nextLine();
+	    System.out.println("Enter passport Number:");
+            int passportNum = sc.nextInt();
+	    if(name.equals("") || country.equals("") || Date.equals("")){
+		System.out.println("invalid input Passenger not created");
+		sc.close();
+		return;
+	    }
+	    try{
+	        esql.executeQuery("INSERT INTO passenger (passnum, fullname, bdate, country) values('"+
+				  passportNum + "','" + name + "','"+ Date + "','" + country + "')");
+	    } catch(SQLException e){
+		System.out.println(e);
+	    }
+	    sc.close();
 	}
 	
 	public static void BookFlight(AirBooking esql){//2
@@ -307,6 +330,27 @@ public class AirBooking{
 	
 	public static void TakeCustomerReview(AirBooking esql){//3
 		//Insert customer review into the ratings table
+	    Scanner sc = new Scanner(System.in);
+	    System.out.println("Enter pid");
+	    int pid = sc.nextInt();
+	    System.out.println("Enter Flight Number");
+	    String flightnum = sc.next();
+	    try{
+		List<List<String>> results = esql.executeQueryAndReturnResult("SELECT * FROM BOOKING WHERE pid = " + pid + "and flightnum = '" + flightnum + "'and departure <= current_date");
+		if(results.size() == 0){
+		    System.out.println("This passenger has never taken this flight");
+		    sc.close();
+		    return;
+		}
+		results = esql.executeQueryAndReturnResult("SELECT * FROM ratings WHERE pid = " + pid + "and flightnum = '" + flightnum + "'");
+		if(results.size() > 0){
+		    System.out.println("This passenger has already reviewed this flight");
+		    sc.close();
+		    return;
+		}
+	    } catch(SQLException e){
+		System.out.println(e);
+	    }
 	}
 	
 	public static void InsertOrUpdateRouteForAirline(AirBooking esql){//4
