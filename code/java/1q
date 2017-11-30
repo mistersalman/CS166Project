@@ -35,7 +35,6 @@ public class AirBooking{
 	//reference to physical database connection
 	private Connection _connection = null;
 	static BufferedReader in = new BufferedReader(new InputStreamReader(System.in));
-	static Scanner sc = new Scanner(System.in);
 	
 	public AirBooking(String dbname, String dbport, String user, String passwd) throws SQLException {
 		System.out.print("Connecting to database...");
@@ -302,6 +301,7 @@ public class AirBooking{
 	public static void AddPassenger(AirBooking esql){//1
 		//Add a new passenger to the database
 	    //needs trigger for passenger number, could also find a way to replace missing valuse that exist
+	    Scanner sc = new Scanner(System.in);
 	    System.out.println("Enter Name:");
 	    String name = sc.nextLine();
 	    System.out.println("Enter country:");
@@ -314,10 +314,10 @@ public class AirBooking{
 	    int year = sc.nextInt();
 	    System.out.println("Enter passport Number:");
             String passportNum = sc.next();
-	    sc.nextLine();
 	    if(name.equals("") || country.equals("") || passportNum.length() != 7 || day <1 || year < 1900 ||
 	    month < 1 || month > 12 || day > 31){
 		System.out.println("invalid input Passenger not created");
+		sc.close();
 		return;
 	    }
 	    String Date = Integer.toString(month) + "-" + Integer.toString(day) + "-" + Integer.toString(year);
@@ -328,6 +328,7 @@ public class AirBooking{
 	    } catch(SQLException e){
 		System.out.println(e);
 	    }
+	    sc.close();
 	}
 	
 	public static void BookFlight(AirBooking esql){//2
@@ -336,6 +337,7 @@ public class AirBooking{
 	
 	public static void TakeCustomerReview(AirBooking esql){//3
 		//Insert customer review into the ratings table
+	    Scanner sc = new Scanner(System.in);
 	    System.out.println("Enter pid");
 	    int pid = sc.nextInt();
 	    System.out.println("Enter Flight Number");
@@ -349,29 +351,27 @@ public class AirBooking{
 		int rc = esql.executeQuery("SELECT * FROM passenger WHERE pid = " + pid);
 		if(rc == 0){
 			System.out.println("Not a valid passenger");
+			sc.close();
 			return;
 		}
-		rc = esql.executeQuery("SELECT * FROM flight WHERE flightnum = '" + flightnum + "'");
+		rc = esql.executeQuery("SELECT * FROM flight WEHRE flightnum = '" + flightnum + "'");
 		if(rc == 0){
-			System.out.println("Not A valid flight");
+			sc.close();
+			System.out.println("Not A valif flight");
 			return;
 		}
-		rc = esql.executeQuery("SELECT * FROM BOOKING WHERE pid = " + pid + " and flightnum = '" + flightnum + "' and departure <= current_date");
+		rc = esql.executeQuery("SELECT * FROM BOOKING WHERE pid = " + pid + "and flightnum = '" + flightnum + "'and departure <= current_date");
 		if(rc == 0){
 		    System.out.println("This passenger has never taken this flight");
+		    sc.close();
 		    return;
 		}
-		rc = esql.executeQuery("SELECT * FROM ratings WHERE pid = " + pid + " and flightnum = '" + flightnum + "'");
+		rc = esql.executeQuery("SELECT * FROM ratings WHERE pid = " + pid + "and flightnum = '" + flightnum + "'");
 		if(rc > 0){
 		    System.out.println("This passenger has already reviewed this flight");
+		    sc.close();
 		    return;
 		}
-		if(score > 5 || score < 0){
-		    System.out.println("Invalid Score Provided");
-		    return;
-		}
-		esql.executeQuery("Insert INTO rating (pid, flightnum, score, comment) values(" + pid + ",'" + flightnum + "'," +
-			score + ",'" + comment + "')");
 	    } catch(SQLException e){
 		System.out.println(e);
 	    }
@@ -382,16 +382,7 @@ public class AirBooking{
 	}
 	
 	public static void ListAvailableFlightsBetweenOriginAndDestination(AirBooking esql) throws Exception{//5
-		//List all flights between origin and distination (i.e. flightNum,origin,destination,plane,duration)
-		System.out.println("Enter Origin:");
-		String origin = sc.nextLine();
-		System.out.println("Enter Destination:");
-		String destination = sc.nextLine();
-		try{
-			esql.executeQueryAndPrintResult("SELECT * FROM flight WHERE origin = '" + origin + "' and destination = '" + destination + "'");
-		} catch (SQLException e){
-			System.out.println(e);
-		} 
+		//List all flights between origin and distination (i.e. flightNum,origin,destination,plane,duration) 
 	}
 	
 	public static void ListMostPopularDestinations(AirBooking esql){//6
@@ -400,20 +391,6 @@ public class AirBooking{
 	
 	public static void ListHighestRatedRoutes(AirBooking esql){//7
 		//List the k highest rated Routes (i.e. Airline Name, flightNum, Avg_Score)
-		System.out.println("How many routes would you like to see?")
-		int numRoutes = sc.nextInt();
-		sc.nextLine();
-		if(numRoutes < 1){
-			System.out.println("cannont look for negative or 0 routes");
-			return;
-		}
-		try{
-			esql.executeQueryAndPrintResults("SELECT flightnum, AirlineName, avg_score From" +
-				I" (Select (SUM(score)/count(score)) avg_score, flightnum From ratings Group By(flightnum)) average , flight f, airline a" +
-				" WHERE f.flightnum = average.flightnum and a.aid = f.aid);
-		} catch(SQLException e){
-			System.out.println(e);
-		}
 	}
 	
 	public static void ListFlightFromOriginToDestinationInOrderOfDuration(AirBooking esql){//8
