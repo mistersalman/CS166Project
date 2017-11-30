@@ -408,9 +408,9 @@ public class AirBooking{
 			return;
 		}
 		try{
-			esql.executeQueryAndPrintResults("SELECT flightnum, AirlineName, avg_score From" +
-				I" (Select (SUM(score)/count(score)) avg_score, flightnum From ratings Group By(flightnum)) average , flight f, airline a" +
-				" WHERE f.flightnum = average.flightnum and a.aid = f.aid);
+			esql.executeQueryAndPrintResults("SELECT f.flightnum, a.name, avg_score From" +
+				I" (Select (SUM(score)/count(score)) avg_score, flightnum From ratings Group By(flightnum)) as average , flight f, airline a" +
+				" WHERE f.flightnum = average.flightnum and a.airid = f.airid order by avg_score decs);
 		} catch(SQLException e){
 			System.out.println(e);
 		}
