@@ -408,9 +408,12 @@ public class AirBooking{
 			return;
 		}
 		try{
-			esql.executeQueryAndPrintResult("SELECT a.name, f.flightnum, avg_score From" +
+			System.out.println("SELECT f.flightnum, a.name, avg_score From" +
+                                " (Select (SUM(score)/count(score)) avg_score, flightnum From ratings Group By(flightnum)) as average , flight f, airline a" +
+                                " WHERE f.flightnum = average.flightnum and a.airid = f.airid ORDER By avg_score DECS");
+			esql.executeQueryAndPrintResult("SELECT f.flightnum, a.name, avg_score From" +
 				" (Select (SUM(score)/count(score)) avg_score, flightnum From ratings Group By(flightnum)) as average , flight f, airline a" +
-				" WHERE f.flightnum = average.flightnum and a.airid = f.airid ORDER By avg_score DESC LIMIT " + numRoutes);
+				" WHERE f.flightnum = average.flightnum and a.airid = f.airid ORDER By avg_score DECS");
 		} catch(SQLException e){
 			System.out.println(e);
 		}
