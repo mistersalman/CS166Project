@@ -381,6 +381,10 @@ public class AirBooking{
 		//Insert a new route for the airline
 		System.out.println("Enter Flight Number: ");
 		String flightnumber = sc.nextLine();
+		while(flightnumber.length() < 5){
+			System.out.println("Invalid flight number. Please enter a valid flight number.");
+			flightnumber = sc.nextLine();
+		}
 		try{
 			int count = esql.executeQuery("Select * from flight where flightnum = '" + flightnumber + "'");
 			if(count == 0)
@@ -393,74 +397,96 @@ public class AirBooking{
 	}
 
 	public static void updateFlight(String flightnumber, AirBooking esql){
-		System.out.println("Enter Origin: ");
+		System.out.println("Enter Origin(enter to skip): ");
 		String origin = sc.nextLine();
-		if(origin.length() == 0){
-			System.out.println("Can not have an empty origin");
-			return;
-		}
-		System.out.println("Enter Destination: ");
+		System.out.println("Enter Destination(enter to skip): ");
 		String destination = sc.nextLine();
-		if(destination.length() == 0){
-			System.out.println("can not have an empty destination");
-		}
-		System.out.println("Enter plane: ");
+		System.out.println("Enter plane type(enter to skip): ");
 		String plane = sc.nextLine();
-		System.out.println("Enter seating capacity: ");
+		System.out.println("Enter seating capacity(-1 to skip): ");
 		int seats = sc.nextInt();
-		if(seats < 0){
-			System.out.println("flight can not have seat count less than 0");
-			return;
+		while(seats < 1 && seats != -1){
+			System.out.println("Flights can not have less than one seat. Please enter a valid seating capacity.");
+			seats = sc.nextInt();
 		}
-		System.out.println("Enter time: ");
+		System.out.println("Enter duration(-1 to skip): ");
 		int time = sc.nextInt();
-		if(time < 0){
-			System.out.println("flight can not have a time less than 0");
+		while(time < 1 && time != -1){
+			System.out.println("Flight can not have a duration less than 0. Please enter a valid flight duration.");
+			time = sc.nextInt();
 		}
-		System.out.println("Enter airid: ");
+		System.out.println("Enter airidi(-1 to skip): ");
 		int airid = sc.nextInt();
 		sc.nextLine();
 		try{
-			int count = esql.executeQuery("SELECT * FROM airline WHERE airid = " + airid);
-			if(count < 0){
-				System.out.println("Invalid airid");
-				return;
+			List< List <String> > defaults = esql.executeQueryAndReturnResult("Select * from flight where flightnum = '" + flightnumber + "'");
+			if(origin.length() == 0){
+				origin = defaults.get(0).get(2).trim();
 			}
-			esql.executeQuery("UPDATE flight set airid = " + airid + ", origin = '" + origin + "', desitination = '" + destination + "', plane = '" + plane + "', seats = " + seats + 
-				", time = " + time +  " where flightnum = '" + flightnumber);
+			if(destination.length() == 0){
+				destination = defaults.get(0).get(3).trim();
+			}
+			if(plane.length() == 0){
+				plane = defaults.get(0).get(4).trim();
+			}
+			if(seats == -1){
+				seats = Integer.parseInt(defaults.get(0).get(5));
+			}
+			if(time == -1){
+				time = Integer.parseInt(defaults.get(0).get(6));
+			}
+			for(int i = 0; i < defaults.size(); ++i){
+				for(int j = 0; j < defaults.get(i).size(); ++j){
+					System.out.println(defaults.get(i).get(j));
+				}
+			}
+			if(airid == -1){
+				airid = Integer.parseInt(defaults.get(0).get(0));
+			}
+			else{
+				int count = esql.executeQuery("SELECT * FROM airline WHERE airid = " + airid);
+				if(count < 0){
+					System.out.println("Invalid airid");
+					return;
+				}
+			}
+			esql.executeQuery("UPDATE flight set airid = " + airid + ", origin = '" + origin + "', destination = '" + destination + "', plane = '" + plane + "', seats = " + seats + 
+				", duration = " + time +  " where flightnum = '" + flightnumber + "'");
 		} catch(SQLException e){
 			System.out.println(e);
 		}
 	}
 
 	public static void insertFlight(String flightnumber, AirBooking esql){
-		if(flightnumber.length() < 5){
-			System.out.println("Flight number must be at least 5 characters");
-			return;
-		}
 		System.out.println("Enter Origin: ");
 		String origin = sc.nextLine();
-		if(origin.length() == 0){
-			System.out.println("Can not have an empty origin");
-			return;
+		while(origin.length() == 0){
+			System.out.println("Empty origin entered. Please enter a valid origin.");
+			origin = sc.nextLine();
 		}
 		System.out.println("Enter Destination: ");
 		String destination = sc.nextLine();
-		if(destination.length() == 0){
-			System.out.println("can not have an empty destination");
+		while(destination.length() == 0){
+			System.out.println("Empty Destination Entered. Please Enter a valid destination.");
+			destination = sc.nextLine();
 		}
-		System.out.println("Enter plane: ");
+		System.out.println("Enter plane type: ");
 		String plane = sc.nextLine();
+		while(plane.length() == 0){
+			System.out.println("Empty Plane type entered. Please enter a valid plane type.");
+			plane = sc.nextLine();
+		}
 		System.out.println("Enter seating capacity: ");
 		int seats = sc.nextInt();
-		if(seats < 0){
-			System.out.println("flight can not have seat count less than 0");
-			return;
+		while(seats < 1){
+			System.out.println("Flights can not have less than one seat. Please enter a valid seating capacity.");
+			seats = sc.nextInt();
 		}
-		System.out.println("Enter time: ");
+		System.out.println("Enter duration: ");
 		int time = sc.nextInt();
-		if(time < 0){
-			System.out.println("flight can not have a time less than 0");
+		while(time < 1){
+			System.out.println("Flight can not have a duration less than 1. Please enter a valid flight duration.");
+			time = sc.nextInt();
 		}
 		System.out.println("Enter airid: ");
 		int airid = sc.nextInt();
@@ -471,7 +497,7 @@ public class AirBooking{
 				System.out.println("Invalid airid");
 				return;
 			}
-			esql.executeQuery("Insert into flight (airid, flightnum, origin, destination, plane, seats, duration" + 
+			esql.executeQuery("Insert into flight (airid, flightnum, origin, destination, plane, seats, duration)" + 
 				"values (" + airid + ",'" + flightnumber + "','" + origin + "','" + destination + "','" + plane + "'," + seats + "," + time +")");
 		} catch(SQLException e){
 			System.out.println(e);
