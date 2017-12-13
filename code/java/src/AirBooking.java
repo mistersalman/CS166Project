@@ -565,7 +565,7 @@ public class AirBooking{
 			System.out.println("Cannot look for negative or zero flights.");
 		}
 		try{
-			esql.executeQueryandPrintREsult("SELECT a.name, f.flightNum, f.origin, f.destination, f.duration" +
+			esql.executeQueryAndPrintResult("SELECT a.name, f.flightNum, f.origin, f.destination, f.duration " +
 			"FROM Airline a, Flight f ORDER BY DESC LIMIT " + numFlights);
 		}
 		catch(SQLException e){
@@ -574,8 +574,30 @@ public class AirBooking{
 	}
 	
 	public static void FindNumberOfAvailableSeatsForFlight(AirBooking esql){//9
-		//
-		
+		//Read flight number and date and return flight number, origin, destination, departure, booked seats, total seats, and available seats
+		System.out.println("What is the flight number of this flight?");
+		String fNum = sc.next();
+		System.out.println("Please enter the month (numerical) of your flight:");
+		int month = sc.nextInt();
+		System.out.println("Please enter the day (numerical) of your fight:");
+		int day = sc.nextInt();
+		System.out.println("Please enter the year (numerical) of your flight:");
+		int year = sc.nextInt();
+		if(month < 1 || month > 12 || day < 0 || day > 31 || year < 1900)
+		{
+			System.out.println("Would it kill you to enter a valid date?");
+			return;
+		}
+		String Date = Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year);
+	    System.out.println(Date);
+	    try{
+			esql.executeQueryAndPrintResult("SELECT f.name, f.origin. f.destination, f.date, (SELECT COUNT(*) FROM Booking WHERE flightNum = '" + fNum + "' AS booked, f.seats, (f.seats - booked) AS open) " +
+			"FROM Flight f, Booking b" +
+			"WHERE b.departure = '" + Date + "' AND b.flightNum = '" + fNum "' AND b.flightNum = f.flightNum)";
+		}
+		catch(SQLException e){
+			System.out.println(e);
+		}
 	}
 	
 }
