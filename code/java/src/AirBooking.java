@@ -331,31 +331,46 @@ public class AirBooking{
 	    }
 	}
 	
-	/*String makeReference(){
+	public static String makeReference(){
 		String CharList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
 		Random pos = new Random();
 		String ref = "";
 		
 		while(ref.length() < 10)
 		{
-			ref += CharList[pos.next() % CharList.size()];
+			ref += CharList.charAt(Math.abs(pos.nextInt() % CharList.length()));
 		}
 		
 		return ref;
-	}*/
+	}
 	
 	public static void BookFlight(AirBooking esql){//2
 		//Book Flight for an existing customer
-		System.out.println("Enter Origin:");
-		String origin =  sc.nextLine();
-		System.out.println("Enter Destination");
-		String destination = sc.nextLine();
+		System.out.println("Enter Flight Number:");
+		String flightNum =  sc.nextLine();
 		System.out.println("Enter Passport Number:");
 		String passportNum = sc.next();
 		sc.nextLine();
-		if(origin.equals("") || destination.equals("") || passportNum.length() != 10){
+		System.out.println("Please enter the month (numerical) of your flight:");
+		int month = sc.nextInt();
+		System.out.println("Please enter the day (numerical) of your fight:");
+		int day = sc.nextInt();
+		System.out.println("Please enter the year (numerical) of your flight:");
+		int year = sc.nextInt();
+		sc.nextLine();
+		if(month < 1 || month > 12 || day < 0 || day > 31 || year < 1900 || flightNum.length() > 8 || passportNum.length() != 10){
 			System.out.println("Invalid input or inputs. Flight not booked.");
 			return;
+		}
+		String date = Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year);
+	    System.out.println(date);
+		String bookRef = makeReference();
+		try{
+			esql.executeQuery("INSERT INTO Booking(bookRef, departure, flightNum, pid) values('" + bookRef + "','" + date + "','" + flightNum +
+			 "', (SELECT p.pID FROM Passenger p WHERE p.passNum = '" + passportNum + "')");
+		}
+		catch(SQLException e){
+			System.out.println(e);
 		}
 	}
 	
