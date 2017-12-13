@@ -24,6 +24,7 @@ import java.io.InputStreamReader;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Scanner;
+import java.util.Random;
 
 /**
  * This class defines a simple embedded SQL utility class that is designed to
@@ -330,6 +331,19 @@ public class AirBooking{
 	    }
 	}
 	
+	/*String makeReference(){
+		String CharList = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890";
+		Random pos = new Random();
+		String ref = "";
+		
+		while(ref.length() < 10)
+		{
+			ref += CharList[pos.next() % CharList.size()];
+		}
+		
+		return ref;
+	}*/
+	
 	public static void BookFlight(AirBooking esql){//2
 		//Book Flight for an existing customer
 		System.out.println("Enter Origin:");
@@ -564,14 +578,20 @@ public class AirBooking{
 	
 	public static void ListFlightFromOriginToDestinationInOrderOfDuration(AirBooking esql){//8
 		//List flight to destination in order of duration (i.e. Airline name, flightNum, origin, destination, duration, plane)
+		System.out.println("Enter Origin:");
+		String origin = sc.nextLine();
+		System.out.println("Enter Destination:");
+		String destination = sc.nextLine();
 		System.out.println("How many flights would you like to list?");
 		int numFlights = sc.nextInt();
+		sc.nextLine();
 		if(numFlights < 1){
 			System.out.println("Cannot look for negative or zero flights.");
+			return;
 		}
 		try{
 			esql.executeQueryAndPrintResult("SELECT a.name, f.flightNum, f.origin, f.destination, f.duration " +
-			"FROM Airline a, Flight f WHERE a.airid = f.airid ORDER BY duration DESC LIMIT " + numFlights);
+			"FROM Airline a, Flight f WHERE a.airid = f.airid AND f.origin = '" + origin + "' AND f.destination = '" + destination + "' ORDER BY duration DESC LIMIT " + numFlights);
 		}
 		catch(SQLException e){
 			System.out.println(e);
