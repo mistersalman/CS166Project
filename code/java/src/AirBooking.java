@@ -588,12 +588,23 @@ public class AirBooking{
 			System.out.println("Would it kill you to enter a valid date?");
 			return;
 		}
-		String Date = Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year);
-	    System.out.println(Date);
+		String date = Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year);
+	    System.out.println(date);
 	    try{
-			esql.executeQueryAndPrintResult("SELECT f.name, f.origin. f.destination, f.date, (SELECT COUNT(*) FROM Booking WHERE flightNum = '" + fNum + "' AS booked, f.seats, (f.seats - booked) AS open) " +
-			"FROM Flight f, Booking b" +
-			"WHERE b.departure = '" + Date + "' AND b.flightNum = '" + fNum "' AND b.flightNum = f.flightNum)";
+			String query = "SELECT f.name, f.origin, f.destination, f.date, (SELECT COUNT(*) FROM Booking WHERE flightNum = '";
+			query += fNum;
+			query += "') AS booked, f.seats, (f.seats - booked) AS open ";
+			query += "FROM Flight f, booking b ";
+			query += "WHERE b.flightNum = f.flightNum AND b.flightNum = '";
+			query += fNum;
+			query += "' AND b.departure = '";
+			query += date;
+			esql.executeQueryAndPrintResult(query);
+			/*
+			esql.executeQueryAndPrintResult("SELECT f.name, f.origin, f.destination, f.date, (SELECT COUNT(*) FROM Booking WHERE flightNum = '" + fNum + "') AS booked, f.seats, (f.seats - booked) AS open " +
+			"FROM Flight f, Booking b " +
+			"WHERE b.departure = '" + date + "' AND b.flightNum = '" + fNum "' AND b.flightNum = f.flightNum");
+			*/
 		}
 		catch(SQLException e){
 			System.out.println(e);
