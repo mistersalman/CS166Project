@@ -536,7 +536,12 @@ public class AirBooking{
 			System.out.println("Cannot look for negative or zero destinations.");
 			return;
 		}
-		
+		try{
+			esql.executeQueryAndPrintResult("SELECT destination, COUNT(*) FROM Flight GROUP BY destination ORDER BY COUNT(*) DESC LIMIT " + numDests);
+		}
+		catch(SQLException e){
+			System.out.println(e);
+		}
 	}
 	
 	public static void ListHighestRatedRoutes(AirBooking esql){//7
@@ -566,7 +571,7 @@ public class AirBooking{
 		}
 		try{
 			esql.executeQueryAndPrintResult("SELECT a.name, f.flightNum, f.origin, f.destination, f.duration " +
-			"FROM Airline a, Flight f ORDER BY DESC LIMIT " + numFlights);
+			"FROM Airline a, Flight f ORDER BY duration DESC LIMIT " + numFlights);
 		}
 		catch(SQLException e){
 			System.out.println(e);
@@ -591,14 +596,17 @@ public class AirBooking{
 		String date = Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year);
 	    System.out.println(date);
 	    try{
-			String query = "SELECT f.name, f.origin, f.destination, f.date, (SELECT COUNT(*) FROM Booking WHERE flightNum = '";
+			String query = "SELECT DISTINCT f.flightNum, f.origin, f.destination, b.departure, (SELECT COUNT(*) FROM Booking WHERE flightNum = '";
 			query += fNum;
-			query += "') AS booked, f.seats, (f.seats - booked) AS open ";
+			query += "') AS booked, f.seats, (f.seats - (SELECT COUNT(*) FROM Booking WHERE flightNum = '";
+			query += fNum;
+			query += "')) AS open ";
 			query += "FROM Flight f, booking b ";
 			query += "WHERE b.flightNum = f.flightNum AND b.flightNum = '";
 			query += fNum;
 			query += "' AND b.departure = '";
 			query += date;
+			query += "';";
 			esql.executeQueryAndPrintResult(query);
 			/*
 			esql.executeQueryAndPrintResult("SELECT f.name, f.origin, f.destination, f.date, (SELECT COUNT(*) FROM Booking WHERE flightNum = '" + fNum + "') AS booked, f.seats, (f.seats - booked) AS open " +
