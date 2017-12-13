@@ -332,6 +332,17 @@ public class AirBooking{
 	
 	public static void BookFlight(AirBooking esql){//2
 		//Book Flight for an existing customer
+		System.out.println("Enter Origin:");
+		String origin =  sc.nextLine();
+		System.out.println("Enter Destination");
+		String destination = sc.nextLine();
+		System.out.println("Enter Passport Number:");
+		String passportNum = sc.next();
+		sc.nextLine();
+		if(origin.equals("") || destination.equals("") || passportNum.length() != 10){
+			System.out.println("Invalid input or inputs. Flight not booked.");
+			return;
+		}
 	}
 	
 	public static void TakeCustomerReview(AirBooking esql){//3
@@ -519,6 +530,13 @@ public class AirBooking{
 	
 	public static void ListMostPopularDestinations(AirBooking esql){//6
 		//Print the k most popular destinations based on the number of flights offered to them (i.e. destination, choices)
+		System.out.println("How many destinations would you like to see?");
+		int numDests = sc.nextInt();
+		if(numDests < 1){
+			System.out.println("Cannot look for negative or zero destinations.");
+			return;
+		}
+		
 	}
 	
 	public static void ListHighestRatedRoutes(AirBooking esql){//7
@@ -541,6 +559,18 @@ public class AirBooking{
 	
 	public static void ListFlightFromOriginToDestinationInOrderOfDuration(AirBooking esql){//8
 		//List flight to destination in order of duration (i.e. Airline name, flightNum, origin, destination, duration, plane)
+		System.out.println("How many flights would you like to list?");
+		int numFlights = sc.nextInt();
+		if(numFlights < 1){
+			System.out.println("Cannot look for negative or zero flights.");
+		}
+		try{
+			esql.executeQueryandPrintREsult("SELECT a.name, f.flightNum, f.origin, f.destination, f.duration" +
+			"FROM Airline a, Flight f ORDER BY DESC LIMIT " + numFlights);
+		}
+		catch(SQLException e){
+			System.out.println(e);
+		}
 	}
 	
 	public static void FindNumberOfAvailableSeatsForFlight(AirBooking esql){//9
