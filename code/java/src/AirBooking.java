@@ -571,7 +571,7 @@ public class AirBooking{
 		}
 		try{
 			esql.executeQueryAndPrintResult("SELECT a.name, f.flightNum, f.origin, f.destination, f.duration " +
-			"FROM Airline a, Flight f ORDER BY duration DESC LIMIT " + numFlights);
+			"FROM Airline a, Flight f WHERE a.airid = f.airid ORDER BY duration DESC LIMIT " + numFlights);
 		}
 		catch(SQLException e){
 			System.out.println(e);
@@ -609,9 +609,7 @@ public class AirBooking{
 			query += "';";
 			esql.executeQueryAndPrintResult(query);
 			/*
-			esql.executeQueryAndPrintResult("SELECT f.name, f.origin, f.destination, f.date, (SELECT COUNT(*) FROM Booking WHERE flightNum = '" + fNum + "') AS booked, f.seats, (f.seats - booked) AS open " +
-			"FROM Flight f, Booking b " +
-			"WHERE b.departure = '" + date + "' AND b.flightNum = '" + fNum "' AND b.flightNum = f.flightNum");
+			esql.executeQueryAndPrintResult();
 			*/
 		}
 		catch(SQLException e){
