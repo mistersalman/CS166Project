@@ -20,7 +20,7 @@ Returns "trigger" AS '
     RETURN NEW;
   END;
 ' LANGUAGE 'plpgsql' VOLATILE;
-DROP TRIGGER IF EXISTS getReviewID ON reatings;
+DROP TRIGGER IF EXISTS getReviewID ON ratings;
 CREATE TRIGGER getReviewID BEFORE INSERT ON ratings FOR EACH ROW Execute PROCEDURE reviewID ( );
 
 CREATE INDEX flight_num

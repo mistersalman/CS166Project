@@ -348,9 +348,6 @@ public class AirBooking{
 		//Book Flight for an existing customer
 		System.out.println("Enter Flight Number:");
 		String fNum =  sc.nextLine();
-		System.out.println("Enter Passenger ID:");
-		int passID = sc.nextInt();
-		sc.nextLine();
 		System.out.println("Please enter the month (numerical) of your flight:");
 		int month = sc.nextInt();
 		System.out.println("Please enter the day (numerical) of your fight:");
@@ -358,7 +355,7 @@ public class AirBooking{
 		System.out.println("Please enter the year (numerical) of your flight:");
 		int year = sc.nextInt();
 		sc.nextLine();
-		if(month < 1 || month > 12 || day < 0 || day > 31 || year < 1900 || fNum.length() > 8 || fNum.length() < 5 || passID < 0){
+		if(month < 1 || month > 12 || day < 0 || day > 31 || year < 1900 || fNum.length() > 8 || fNum.length() < 5){
 			System.out.println("Invalid input or inputs. Flight not booked.");
 			return;
 		}
@@ -366,6 +363,11 @@ public class AirBooking{
 	    System.out.println(date);
 		String bookRef = makeReference();
 		try{
+			System.out.println("Enter Passorpt number:");
+			String passportnum = sc.nextLine();
+			List<List<String>> results =  esql.executeQueryAndReturnResult("Select pid from passenger WHERE passnum = '" + passportnum + "'");
+			int passID = Integer.parseInt(results.get(0).get(0));
+			System.out.println(passID);
 			int bc = esql.executeQuery("SELECT * FROM flight WHERE flightnum = '" + fNum + "'");
 			if(bc == 0){
 				System.out.println("That is not a valid flight.");
@@ -375,7 +377,7 @@ public class AirBooking{
 			if(bc == 0){
 				System.out.println("That is not a valid passenger.");
 			}
-			/*String query = "SELECT DISTINCT (SELECT COUNT(*) FROM Booking WHERE flightNum = '";
+			String query = "SELECT DISTINCT (SELECT COUNT(*) FROM Booking WHERE flightNum = '";
 			query += fNum;
 			query += "') AS booked, f.seats, (f.seats - (SELECT COUNT(*) FROM Booking WHERE flightNum = '";
 			query += fNum;
@@ -386,9 +388,12 @@ public class AirBooking{
 			query += "' AND b.departure = '";
 			query += date;
 			query += "';";
-			bc = esql.executeQuery(query);
-			System.out.println(bc);*/
-			esql.executeUpdate("INSERT INTO Booking(bookRef, departure, pID, flightNum) values('" + bookRef + "','" + date + "','" + passID + "','" + fNum + "')");
+			results = esql.executeQueryAndReturnResult(query);
+			if(results.size() > 0 && Integer.parseInt(results.get(0).get(2)) <= 0){
+				System.out.println("Flight is full. Please try to book anohter.");
+				return;
+			}
+			esql.executeUpdate("INSERT INTO Booking(bookRef, departure, pID, flightNum) values('" + bookRef + "','" + date + "'," + passID + ",'" + fNum + "')");
 			esql.executeQueryAndPrintResult("SELECT * FROM Booking b WHERE b.bookRef = '" + bookRef + "';");
 		}
 		catch(SQLException e){
@@ -410,7 +415,7 @@ public class AirBooking{
 	    try{
 		int rc = 0;
 		int pid = 0;
-		List < List < String> > result  = esql.executeQueryAndReturnResult("SELECT pid FROM passenger WHERE passportnum = " + passportnum);
+		List <List<String>> result = esql.executeQueryAndReturnResult("SELECT pid FROM passenger WHERE passnum = '" + passportnum + "'");
 		rc = result.size();
 		if(rc == 0){
 			System.out.println("Not a valid passenger");
