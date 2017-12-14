@@ -347,7 +347,7 @@ public class AirBooking{
 	public static void BookFlight(AirBooking esql){//2
 		//Book Flight for an existing customer
 		System.out.println("Enter Flight Number:");
-		String flightNum =  sc.nextLine();
+		String fNum =  sc.nextLine();
 		System.out.println("Enter Passenger ID:");
 		int passID = sc.nextInt();
 		sc.nextLine();
@@ -358,7 +358,7 @@ public class AirBooking{
 		System.out.println("Please enter the year (numerical) of your flight:");
 		int year = sc.nextInt();
 		sc.nextLine();
-		if(month < 1 || month > 12 || day < 0 || day > 31 || year < 1900 || flightNum.length() > 8 || passID < 0){
+		if(month < 1 || month > 12 || day < 0 || day > 31 || year < 1900 || fNum.length() > 8 || fNum.length() < 5 || passID < 0){
 			System.out.println("Invalid input or inputs. Flight not booked.");
 			return;
 		}
@@ -366,7 +366,29 @@ public class AirBooking{
 	    System.out.println(date);
 		String bookRef = makeReference();
 		try{
-			esql.executeUpdate("INSERT INTO Booking(bookRef, departure, pID, flightNum) values('" + bookRef + "','" + date + "','" + passID + "','" + flightNum + "')");
+			int bc = esql.executeQuery("SELECT * FROM flight WHERE flightnum = '" + fNum + "'");
+			if(bc == 0){
+				System.out.println("That is not a valid flight.");
+				return;
+			}
+			bc = esql.executeQuery("SELECT * FROM Passenger WHERE pID = " + passID);
+			if(bc == 0){
+				System.out.println("That is not a valid passenger.");
+			}
+			/*String query = "SELECT DISTINCT (SELECT COUNT(*) FROM Booking WHERE flightNum = '";
+			query += fNum;
+			query += "') AS booked, f.seats, (f.seats - (SELECT COUNT(*) FROM Booking WHERE flightNum = '";
+			query += fNum;
+			query += "')) AS open ";
+			query += "FROM Flight f, booking b ";
+			query += "WHERE b.flightNum = f.flightNum AND b.flightNum = '";
+			query += fNum;
+			query += "' AND b.departure = '";
+			query += date;
+			query += "';";
+			bc = esql.executeQuery(query);
+			System.out.println(bc);*/
+			esql.executeUpdate("INSERT INTO Booking(bookRef, departure, pID, flightNum) values('" + bookRef + "','" + date + "','" + passID + "','" + fNum + "')");
 			esql.executeQueryAndPrintResult("SELECT * FROM Booking b WHERE b.bookRef = '" + bookRef + "';");
 		}
 		catch(SQLException e){
@@ -551,6 +573,12 @@ public class AirBooking{
 		System.out.println("Enter Destination:");
 		String destination = sc.nextLine();
 		try{
+			int fc = esql.executeQuery("SELECT * FROM flight WHERE origin = '" + origin + "' and destination = '" + destination + "'");
+			if(fc == 0)
+			{
+				System.out.println("There are no flights offered between these two cities.");
+				return;
+			}
 			esql.executeQueryAndPrintResult("SELECT * FROM flight WHERE origin = '" + origin + "' and destination = '" + destination + "'");
 		} catch (SQLException e){
 			System.out.println(e);
@@ -579,7 +607,7 @@ public class AirBooking{
 		int numRoutes = sc.nextInt();
 		sc.nextLine();
 		if(numRoutes < 1){
-			System.out.println("cannont look for negative or 0 routes");
+			System.out.println("Cannot look for negative or 0 routes");
 			return;
 		}
 		try{
@@ -605,6 +633,12 @@ public class AirBooking{
 			return;
 		}
 		try{
+			int fc = esql.executeQuery("SELECT * FROM flight WHERE origin = '" + origin + "' and destination = '" + destination + "'");
+			if(fc == 0)
+			{
+				System.out.println("There are no flights offered between these two cities.");
+				return;
+			}
 			esql.executeQueryAndPrintResult("SELECT a.name, f.flightNum, f.origin, f.destination, f.duration " +
 			"FROM Airline a, Flight f WHERE a.airid = f.airid AND f.origin = '" + origin + "' AND f.destination = '" + destination + "' ORDER BY duration DESC LIMIT " + numFlights);
 		}
