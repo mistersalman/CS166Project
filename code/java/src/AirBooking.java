@@ -376,8 +376,8 @@ public class AirBooking{
 	
 	public static void TakeCustomerReview(AirBooking esql){//3
 		//Insert customer review into the ratings table
-	    System.out.println("Enter pid");
-	    int pid = sc.nextInt();
+	    System.out.println("PassportNumber");
+	    String passportnum = sc.nextLine();
 	    System.out.println("Enter Flight Number");
 	    String flightnum = sc.next();
 	    System.out.println("Enter Score 0-5");
@@ -386,10 +386,15 @@ public class AirBooking{
 	    sc.nextLine();
 	    String comment = sc.nextLine();;
 	    try{
-		int rc = esql.executeQuery("SELECT * FROM passenger WHERE pid = " + pid);
+		int rc = 0;
+		int pid = 0;
+		List < List < String> > result  = esql.executeQueryAndReturnResult("SELECT pid FROM passenger WHERE passportnum = " + passportnum);
+		rc = result.size();
 		if(rc == 0){
 			System.out.println("Not a valid passenger");
 			return;
+		} else {
+			pid = Integer.parseInt(result.get(0).get(0));
 		}
 		rc = esql.executeQuery("SELECT * FROM flight WHERE flightnum = '" + flightnum + "'");
 		if(rc == 0){
