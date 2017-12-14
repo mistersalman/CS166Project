@@ -302,19 +302,64 @@ public class AirBooking{
 
 	public static void AddPassenger(AirBooking esql){//1
 		//Add a new passenger to the database
-	    //needs trigger for passenger number, could also find a way to replace missing valuse that exist
+	    //find a way to replace missing valuse that exist
+	    int errorCount = 0;
 	    System.out.println("Enter Name:");
 	    String name = sc.nextLine();
+	    while(name == ""){
+		errorCount++;
+		if(errorCount > 3)
+			return;
+		System.out.println("can not have an empty name. \n Enter name: ");
+		name = sc.nextLine();
+	    }
 	    System.out.println("Enter country:");
 	    String country = sc.nextLine();
+	    errorCount = 0;
+	    while(country == ""){
+		errorCount++;
+		if(errorCount > 3)
+			return;
+		System.out.println("can not have an empty country name \n Enter country: ");
+		country = sc.nextLine();
+	    }
 	    System.out.println("Enter Birth Date day:");
 	    int day = sc.nextInt();
+	    errorCount = 0;
+	    while(day <=0 || day > 31){
+		errorCount++;
+		if(errorCount > 3)
+			return;
+		System.out.println("Not a valid date. Please try again. \n Enter Birth date day: ");
+		day = sc.nextInt();
+	    }
 	    System.out.println("Enter Birth month:");
             int month = sc.nextInt();
+	    errorCount = 0;
+	    while(month > 12 || month < 1){
+		errorCount++;
+		if(errorCount > 3)
+			return;
+		System.out.println("Not a valid month. Please try again. \n Enter Birth Month: ");
+		month = sc.nextInt();
+	    }
 	    System.out.println("Enter Birth Year:");
 	    int year = sc.nextInt();
+	    errorCount = 0;
+	    while(year < 1900 || year > 2017){
+		errorCount++;
+		if(errorCount > 3)
+			return;
+		System.out.println("Enter a birth year after 1900 and as a year that has passed. If you were born before 1900 please contact our supporti. \n Enter birth year: ");
+		year = sc.nextInt();
+	    }
 	    System.out.println("Enter passport Number:");
             String passportNum = sc.next();
+	    errorCount = 0;
+	    while(passportNum.length() != 10){
+		System.out.println("Invalid passport number. Please enter a valid 10 character passport number. \n Enter passport number: ");
+		passportNum = sc.next();
+	    }
 	    sc.nextLine();
 	    if(name.equals("") || country.equals("") || passportNum.length() != 10 || day <1 || year < 1900 ||
 	    month < 1 || month > 12 || day > 31){
@@ -346,6 +391,7 @@ public class AirBooking{
 	
 	public static void BookFlight(AirBooking esql){//2
 		//Book Flight for an existing customer
+		//check passenger is not already booked for flight, loop incalid inputs
 		System.out.println("Enter Flight Number:");
 		String fNum =  sc.nextLine();
 		System.out.println("Please enter the month (numerical) of your flight:");
@@ -403,6 +449,7 @@ public class AirBooking{
 	
 	public static void TakeCustomerReview(AirBooking esql){//3
 		//Insert customer review into the ratings table
+		//add loops on invalid input
 	    System.out.println("PassportNumber");
 	    String passportnum = sc.nextLine();
 	    System.out.println("Enter Flight Number");
@@ -469,6 +516,8 @@ public class AirBooking{
 	}
 
 	public static void updateFlight(String flightnumber, AirBooking esql){
+		//need to check airid
+		int errorCount = 0;
 		System.out.println("Enter Origin(enter to skip): ");
 		String origin = sc.nextLine();
 		System.out.println("Enter Destination(enter to skip): ");
@@ -478,12 +527,19 @@ public class AirBooking{
 		System.out.println("Enter seating capacity(-1 to skip): ");
 		int seats = sc.nextInt();
 		while(seats < 1 && seats != -1){
+			errorCount++;
+			if(errorCount > 3)
+				return;
 			System.out.println("Flights can not have less than one seat. Please enter a valid seating capacity.");
 			seats = sc.nextInt();
 		}
 		System.out.println("Enter duration(-1 to skip): ");
 		int time = sc.nextInt();
+		errorCount = 0;
 		while(time < 1 && time != -1){
+			errorCount++;
+			if(errorCount > 3)
+				return;
 			System.out.println("Flight can not have a duration less than 0. Please enter a valid flight duration.");
 			time = sc.nextInt();
 		}
@@ -530,33 +586,54 @@ public class AirBooking{
 	}
 
 	public static void insertFlight(String flightnumber, AirBooking esql){
+		//loop on invalid air id
+		int errorCount = 0;
 		System.out.println("Enter Origin: ");
 		String origin = sc.nextLine();
 		while(origin.length() == 0){
+			errorCount++;
+			if(errorCount > 3)
+				return;
 			System.out.println("Empty origin entered. Please enter a valid origin.");
 			origin = sc.nextLine();
 		}
 		System.out.println("Enter Destination: ");
 		String destination = sc.nextLine();
+		errorCount = 0;
 		while(destination.length() == 0){
+			errorCount++;
+			if(errorCount > 3)
+				return;
 			System.out.println("Empty Destination Entered. Please Enter a valid destination.");
 			destination = sc.nextLine();
 		}
+		errorCount = 0;
 		System.out.println("Enter plane type: ");
 		String plane = sc.nextLine();
 		while(plane.length() == 0){
+			errorCount++;
+			if(errorCount > 3)
+				return;
 			System.out.println("Empty Plane type entered. Please enter a valid plane type.");
 			plane = sc.nextLine();
 		}
 		System.out.println("Enter seating capacity: ");
 		int seats = sc.nextInt();
+		errorCount = 0;
 		while(seats < 1){
+			errorCount++;
+			if(errorCount > 3)
+				return;
 			System.out.println("Flights can not have less than one seat. Please enter a valid seating capacity.");
 			seats = sc.nextInt();
 		}
 		System.out.println("Enter duration: ");
 		int time = sc.nextInt();
+		errorCount = 0;
 		while(time < 1){
+			errorCount++;
+			if(errorCount > 3)
+				return;
 			System.out.println("Flight can not have a duration less than 1. Please enter a valid flight duration.");
 			time = sc.nextInt();
 		}
@@ -659,6 +736,7 @@ public class AirBooking{
 	
 	public static void FindNumberOfAvailableSeatsForFlight(AirBooking esql){//9
 		//Read flight number and date and return flight number, origin, destination, departure, booked seats, total seats, and available seats
+		//loop on invalid inputs
 		System.out.println("What is the flight number of this flight?");
 		String fNum = sc.next();
 		System.out.println("Please enter the month (numerical) of your flight:");
