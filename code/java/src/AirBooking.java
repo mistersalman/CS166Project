@@ -348,8 +348,8 @@ public class AirBooking{
 		//Book Flight for an existing customer
 		System.out.println("Enter Flight Number:");
 		String flightNum =  sc.nextLine();
-		System.out.println("Enter Passport Number:");
-		String passportNum = sc.next();
+		System.out.println("Enter Passenger ID:");
+		int passID = sc.nextInt();
 		sc.nextLine();
 		System.out.println("Please enter the month (numerical) of your flight:");
 		int month = sc.nextInt();
@@ -358,7 +358,7 @@ public class AirBooking{
 		System.out.println("Please enter the year (numerical) of your flight:");
 		int year = sc.nextInt();
 		sc.nextLine();
-		if(month < 1 || month > 12 || day < 0 || day > 31 || year < 1900 || flightNum.length() > 8 || passportNum.length() != 10){
+		if(month < 1 || month > 12 || day < 0 || day > 31 || year < 1900 || flightNum.length() > 8 || passID < 0){
 			System.out.println("Invalid input or inputs. Flight not booked.");
 			return;
 		}
@@ -366,8 +366,8 @@ public class AirBooking{
 	    System.out.println(date);
 		String bookRef = makeReference();
 		try{
-			esql.executeQuery("INSERT INTO Booking(bookRef, departure, flightNum, pid) values('" + bookRef + "','" + date + "','" + flightNum +
-			 "', (SELECT p.pID FROM Passenger p WHERE p.passNum = '" + passportNum + "')");
+			esql.executeUpdate("INSERT INTO Booking(bookRef, departure, pID, flightNum) values('" + bookRef + "','" + date + "','" + passID + "','" + flightNum + "')");
+			esql.executeQueryAndPrintResult("SELECT * FROM Booking b WHERE b.bookRef = '" + bookRef + "';");
 		}
 		catch(SQLException e){
 			System.out.println(e);
