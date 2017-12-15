@@ -299,6 +299,20 @@ public class AirBooking{
 		}while (true);
 		return input;
 	}//end readChoice
+	
+	public static boolean isValidDate(int day, int month, int year){
+		if(month > 12 || month < 0 || day > 31 || day < 0 || year < 1900){
+			return false;
+		}
+		if((month == 4 || month == 6 || month == 9 || month == 11) && day > 30){
+			return false;
+		}
+		if((month == 02 && year % 4 != 0) && day > 28)
+		{
+			return false;
+		}
+		return true;
+	}
 
 	public static void AddPassenger(AirBooking esql){//1
 		//Add a new passenger to the database
@@ -372,12 +386,19 @@ public class AirBooking{
 		System.out.println("Invalid passport number. Please enter a valid 10 character passport number. \n Enter passport number: ");
 		passportNum = sc.next();
 	    }
-	    if(name.equals("") || country.equals("") || passportNum.length() != 10 || day <1 || year < 1900 ||
-	    month < 1 || month > 12 || day > 31){
-		System.out.println("invalid input Passenger not created");
+	    sc.nextLine();
+	    if(name.equals("") || country.equals("") || passportNum.length() != 10){
+		System.out.println("invalid input. Passenger not created");
 		return;
 	    }
-	    String Date = Integer.toString(month) + "-" + Integer.toString(day) + "-" + Integer.toString(year);
+	    String Date = "";
+	    if(isValidDate(day, month, year)){
+	    	Date = Integer.toString(month) + "-" + Integer.toString(day) + "-" + Integer.toString(year);
+	    }
+	    else{
+	    	System.out.println("Invalid input. Passenger not created");
+	    	return;
+	    }
 	    try{
 	        esql.executeQuery("INSERT INTO passenger (passnum, fullname, bdate, country) values('"+
 				  passportNum + "','" + name + "','"+ Date + "','" + country + "')");
@@ -411,12 +432,19 @@ public class AirBooking{
 		System.out.println("Please enter the year (numerical) of your flight:");
 		int year = sc.nextInt();
 		sc.nextLine();
-		if(month < 1 || month > 12 || day < 0 || day > 31 || year < 1900 || fNum.length() > 8 || fNum.length() < 5){
-			System.out.println("Invalid input or inputs. Flight not booked.");
+		if(fNum.length() > 8 || fNum.length() < 5){
+			System.out.println("Invalid flight number. Flight not booked.");
 			return;
 		}
-		String date = Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year);
-	    System.out.println(date);
+		String Date = "";
+	    if(isValidDate(day, month, year)){
+	    	Date = Integer.toString(month) + "-" + Integer.toString(day) + "-" + Integer.toString(year);
+	    }
+	    else{
+	    	System.out.println("Invalid date. Flight not booked. Returning to home screen.");
+	    	return;
+	    }
+	    System.out.println(Date);
 		String bookRef = makeReference();
 		try{
 			System.out.println("Enter Passport number:");
@@ -442,14 +470,14 @@ public class AirBooking{
 			query += "WHERE b.flightNum = f.flightNum AND b.flightNum = '";
 			query += fNum;
 			query += "' AND b.departure = '";
-			query += date;
+			query += Date;
 			query += "';";
 			results = esql.executeQueryAndReturnResult(query);
 			if(results.size() > 0 && Integer.parseInt(results.get(0).get(2)) <= 0){
 				System.out.println("Flight is full. Please try to book anohter.");
 				return;
 			}
-			esql.executeUpdate("INSERT INTO Booking(bookRef, departure, pID, flightNum) values('" + bookRef + "','" + date + "'," + passID + ",'" + fNum + "')");
+			esql.executeUpdate("INSERT INTO Booking(bookRef, departure, pID, flightNum) values('" + bookRef + "','" + Date + "'," + passID + ",'" + fNum + "')");
 			esql.executeQueryAndPrintResult("SELECT * FROM Booking b WHERE b.bookRef = '" + bookRef + "';");
 		}
 		catch(SQLException e){
@@ -759,13 +787,15 @@ public class AirBooking{
 		int day = sc.nextInt();
 		System.out.println("Please enter the year (numerical) of your flight:");
 		int year = sc.nextInt();
-		if(month < 1 || month > 12 || day < 0 || day > 31 || year < 1900)
-		{
-			System.out.println("Invalid date entered.");
-			return;
-		}
-		String date = Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year);
-	    System.out.println(date);
+		String Date = "";
+	    if(isValidDate(day, month, year)){
+	    	Date = Integer.toString(month) + "-" + Integer.toString(day) + "-" + Integer.toString(year);
+	    }
+	    else{
+	    	System.out.println("Invalid date. Returning to home screen.");
+	    	return;
+	    }
+	    System.out.println(Date);
 	    try{
 			String query = "SELECT DISTINCT f.flightNum, f.origin, f.destination, b.departure, (SELECT COUNT(*) FROM Booking WHERE flightNum = '";
 			query += fNum;
@@ -776,7 +806,7 @@ public class AirBooking{
 			query += "WHERE b.flightNum = f.flightNum AND b.flightNum = '";
 			query += fNum;
 			query += "' AND b.departure = '";
-			query += date;
+			query += Date;
 			query += "';";
 			esql.executeQueryAndPrintResult(query);
 		}
