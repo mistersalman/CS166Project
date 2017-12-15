@@ -722,6 +722,7 @@ public class AirBooking{
 		//Print the k most popular destinations based on the number of flights offered to them (i.e. destination, choices)
 		System.out.println("How many destinations would you like to see?");
 		int numDests = sc.nextInt();
+		sc.nextLine();
 		if(numDests < 1){
 			System.out.println("Cannot look for negative or zero destinations.");
 			return;
