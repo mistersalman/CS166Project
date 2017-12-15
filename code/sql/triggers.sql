@@ -52,15 +52,15 @@ alter table booking CLUSTER ON flight_num_booking;
 cluster booking;
 
 create INDEX flight_num_rating
-ON rating
+ON ratings
 USING BTREE (flightnum);
 
 create INDEX pid_rating
-ON rating
+ON ratings
 USING BTREE (pid);
 
-alter table rating CLUSTER ON pid_rating;
-cluster rating;
+alter table ratings CLUSTER ON pid_rating;
+cluster ratings;
 
 CREATE INDEX origin
 ON flight
