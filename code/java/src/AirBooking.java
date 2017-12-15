@@ -306,7 +306,7 @@ public class AirBooking{
 	    int errorCount = 0;
 	    System.out.println("Enter Name:");
 	    String name = sc.nextLine();
-	    while(name == ""){
+	    while(name.equals("")){
 		errorCount++;
 		if(errorCount > 3)
 			return;
@@ -316,7 +316,7 @@ public class AirBooking{
 	    System.out.println("Enter country:");
 	    String country = sc.nextLine();
 	    errorCount = 0;
-	    while(country == ""){
+	    while(country.equals("")){
 		errorCount++;
 		if(errorCount > 3)
 			return;
@@ -328,8 +328,10 @@ public class AirBooking{
 	    errorCount = 0;
 	    while(day <=0 || day > 31){
 		errorCount++;
-		if(errorCount > 3)
+		if(errorCount > 3){
+			sc.nextLine();
 			return;
+		}
 		System.out.println("Not a valid date. Please try again. \n Enter Birth date day: ");
 		day = sc.nextInt();
 	    }
@@ -338,8 +340,10 @@ public class AirBooking{
 	    errorCount = 0;
 	    while(month > 12 || month < 1){
 		errorCount++;
-		if(errorCount > 3)
+		if(errorCount > 3){
+			sc.nextLine();
 			return;
+		}
 		System.out.println("Not a valid month. Please try again. \n Enter Birth Month: ");
 		month = sc.nextInt();
 	    }
@@ -348,8 +352,10 @@ public class AirBooking{
 	    errorCount = 0;
 	    while(year < 1900 || year > 2017){
 		errorCount++;
-		if(errorCount > 3)
+		if(errorCount > 3){
+			sc.nextLine();
 			return;
+		}
 		System.out.println("Enter a birth year after 1900 and as a year that has passed. If you were born before 1900 please contact our supporti. \n Enter birth year: ");
 		year = sc.nextInt();
 	    }
@@ -357,17 +363,21 @@ public class AirBooking{
             String passportNum = sc.next();
 	    errorCount = 0;
 	    while(passportNum.length() != 10){
+		errorCount++;
+		if(errorCount > 3){
+			sc.nextLine();
+			return;
+		}
+
 		System.out.println("Invalid passport number. Please enter a valid 10 character passport number. \n Enter passport number: ");
 		passportNum = sc.next();
 	    }
-	    sc.nextLine();
 	    if(name.equals("") || country.equals("") || passportNum.length() != 10 || day <1 || year < 1900 ||
 	    month < 1 || month > 12 || day > 31){
 		System.out.println("invalid input Passenger not created");
 		return;
 	    }
 	    String Date = Integer.toString(month) + "-" + Integer.toString(day) + "-" + Integer.toString(year);
-	    System.out.println(Date);
 	    try{
 	        esql.executeQuery("INSERT INTO passenger (passnum, fullname, bdate, country) values('"+
 				  passportNum + "','" + name + "','"+ Date + "','" + country + "')");
@@ -622,8 +632,10 @@ public class AirBooking{
 		errorCount = 0;
 		while(seats < 1){
 			errorCount++;
-			if(errorCount > 3)
+			if(errorCount > 3){
+				sc.nextLine();
 				return;
+			}
 			System.out.println("Flights can not have less than one seat. Please enter a valid seating capacity.");
 			seats = sc.nextInt();
 		}
@@ -632,8 +644,10 @@ public class AirBooking{
 		errorCount = 0;
 		while(time < 1){
 			errorCount++;
-			if(errorCount > 3)
+			if(errorCount > 3){
+				sc.nextLine();
 				return;
+			}
 			System.out.println("Flight can not have a duration less than 1. Please enter a valid flight duration.");
 			time = sc.nextInt();
 		}
