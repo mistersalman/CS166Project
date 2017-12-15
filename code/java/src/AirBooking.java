@@ -391,7 +391,7 @@ public class AirBooking{
 	
 	public static void BookFlight(AirBooking esql){//2
 		//Book Flight for an existing customer
-		//check passenger is not already booked for flight, loop incalid inputs
+		//check passenger is not already booked for flight, loop invalid inputs
 		System.out.println("Enter Flight Number:");
 		String fNum =  sc.nextLine();
 		System.out.println("Please enter the month (numerical) of your flight:");
@@ -409,7 +409,7 @@ public class AirBooking{
 	    System.out.println(date);
 		String bookRef = makeReference();
 		try{
-			System.out.println("Enter Passorpt number:");
+			System.out.println("Enter Passport number:");
 			String passportnum = sc.nextLine();
 			List<List<String>> results =  esql.executeQueryAndReturnResult("Select pid from passenger WHERE passnum = '" + passportnum + "'");
 			int passID = Integer.parseInt(results.get(0).get(0));
@@ -747,7 +747,7 @@ public class AirBooking{
 		int year = sc.nextInt();
 		if(month < 1 || month > 12 || day < 0 || day > 31 || year < 1900)
 		{
-			System.out.println("Would it kill you to enter a valid date?");
+			System.out.println("Invalid date entered.");
 			return;
 		}
 		String date = Integer.toString(month) + "/" + Integer.toString(day) + "/" + Integer.toString(year);
@@ -765,9 +765,6 @@ public class AirBooking{
 			query += date;
 			query += "';";
 			esql.executeQueryAndPrintResult(query);
-			/*
-			esql.executeQueryAndPrintResult();
-			*/
 		}
 		catch(SQLException e){
 			System.out.println(e);
